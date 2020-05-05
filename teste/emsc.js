@@ -1,0 +1,163 @@
+/** helpers */
+function id(id) {
+    return document.getElementById(id);
+}
+
+/** C interface wrappers */
+function lxrad_scale_up() {
+    return Module.ccall('lxrad_scale_up', null, null, null);
+}
+
+function lxrad_scale_down() {
+    return Module.ccall('lxrad_scale_down', null, null, null);
+}
+
+/** emscripten wrapper page Javascript functions **/
+
+var loaded = false;
+var Module = {
+    preRun: [
+        function() {
+          if (window.location.search.substr(1).trim().split('&')[0])
+          {
+            FS.createPreloadedFile('/tmp/','file.pzw',window.location.search.substr(1).trim().split('&')[0],true,true);
+            Module['arguments'][0]='/tmp/file.pzw';
+          }
+          else{
+            Module['arguments'] = [];
+          }
+        },
+    ],
+    postRun: [
+        function() {
+            initDragAndDrop();
+        },
+    ],
+    print: (function() {
+        return function(text) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+        };
+    })(),
+    printErr: function(text) {
+        text = Array.prototype.slice.call(arguments).join(' ');
+        console.error(text);
+    },
+    canvas: (function() {
+        var canvas = id('canvas');
+        canvas.addEventListener("webglcontextlost", function(e) { alert('FIXME: WebGL context lost, please reload the page'); e.preventDefault(); }, false);
+        return canvas;
+    })(),
+    setStatus: function(text) {
+        console.log("status: " + text);
+    },
+};
+
+window.onerror = function(event) {
+    console.log("onerror: " + event);
+};
+
+function callAsEventHandler(func_name) {
+    // this is some hackery to make the browser module believe that it
+    // is running in an event handler
+    var eventHandler = { allowsDeferredCalls: true };
+    ++JSEvents.inEventHandler;
+    JSEvents.currentEventHandler = eventHandler;
+    Module.cwrap(func_name)()
+    --JSEvents.inEventHandler;
+}
+
+
+// drag-n-drop functions
+function initDragAndDrop() {
+    // add a drag'n'drop handler to the WebGL canvas
+    id('load_panel_container').addEventListener('dragenter', load_dragenter, false);
+    id('load_panel_container').addEventListener('dragleave', load_dragleave, false);
+    id('load_panel_container').addEventListener('dragover', load_dragover, false);
+    id('load_panel_container').addEventListener('drop', load_drop, false);
+}
+
+function load_dragenter(e) {
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+function load_dragleave(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    id('load_panel_container').classList.remove('highlight');
+}
+
+function load_dragover(e) {
+    id('load_panel_container').classList.add('highlight');
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+function load_drop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    id('load_panel_container').classList.remove('highlight');
+    toggle_load_panel();
+    load_file(e.dataTransfer.files);
+}
+
+// load a file from the filepicker 
+function load_file(files) {
+    if (files.length > 0) {
+        var file = files[0];
+        console.log('--- load file:');
+        console.log('  name: ' + file.name);
+        console.log('  type: ' + file.type);
+        console.log('  size: ' + file.size);
+        
+        // load the file content (ignore big files)
+        if (file.size < 256000) {
+            var reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                console.log('file loaded!')
+                var content = loadEvent.target.result;
+                if (content) {
+                    console.log('content length: ' + content.byteLength);
+                    var uint8Array = new Uint8Array(content);
+                    FS.writeFile(file.name , uint8Array); 
+                    var res = Module.ccall('file_ready',  // C function name
+                        null,
+                        ['string'],  // name
+                        [file.name]);
+                    if (res == 0) {
+                        console.warn('file_ready failed!');
+                    } 
+                }
+                else {
+                    console.warn('load result empty!');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        else {
+            console.warn('ignoring dropped file because it is too big')
+        }
+    }
+}
+
+// toggle the nav bar
+function nav_toggle() {
+    id('nav').classList.toggle('toggle');
+}
+
+// show/hide panels
+
+function toggle_load_panel() {
+    id('load_panel').classList.toggle('hidden');
+    id('quickload_panel').classList.add('hidden');
+    id('systems_panel').classList.add('hidden');
+    id('load_panel_container').classList.remove('highlight');
+}
+
+
+function ui_open_filepicker() {
+    id('filepicker').click();
+}
+
+
