@@ -20,19 +20,7 @@ var spinnerElement = document.getElementById('spinner');
 
 var loaded = false;
 var Module = {
-    preRun: [
-        function() {
-          Module['arguments']=window.location.search.substr(1).trim().split('&');
-          if (Module['arguments'][0])
-          {
-            FS.createPreloadedFile('/tmp/','file.pzw',Module['arguments'][0],true,true);
-            Module['arguments'][0]='/tmp/file.pzw';
-          }
-          else{
-            Module['arguments'] = [];
-          }
-        },
-    ],
+    preRun: [],
     postRun: [
         function() {
             initDragAndDrop();
