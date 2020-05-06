@@ -14,13 +14,18 @@ function lxrad_scale_down() {
 
 /** emscripten wrapper page Javascript functions **/
 
+var statusElement = document.getElementById('status');
+var progressElement = document.getElementById('progress');
+var spinnerElement = document.getElementById('spinner');
+
 var loaded = false;
 var Module = {
     preRun: [
         function() {
-          if (window.location.search.substr(1).trim().split('&')[0])
+          Module['arguments']=window.location.search.substr(1).trim().split('&');
+          if (Module['arguments'][0])
           {
-            FS.createPreloadedFile('/tmp/','file.pzw',window.location.search.substr(1).trim().split('&')[0],true,true);
+            FS.createPreloadedFile('/tmp/','file.pzw',Module['arguments'][0],true,true);
             Module['arguments'][0]='/tmp/file.pzw';
           }
           else{
@@ -49,9 +54,61 @@ var Module = {
         return canvas;
     })(),
     setStatus: function(text) {
-        console.log("status: " + text);
-    },
-};
+         console.log("status: " + text);
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text)
+            { 
+             spinnerElement.style.display = 'none';
+             var style = document.createElement('style');
+             style.innerHTML = `
+             #canvas {
+	     position: absolute;
+	     top: 0px;
+	     left: 0px;
+	     margin: 0px;
+	     width: 100%;
+	     height: 100%;
+	     overflow: hidden;
+	     display: block;
+             }`;
+            document.head.appendChild(style);
+            }
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        Module.setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+
+
 
 window.onerror = function(event) {
     console.log("onerror: " + event);
