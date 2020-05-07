@@ -63,19 +63,15 @@ var Module = {
             if (!text)
             { 
              spinnerElement.style.display = 'none';
-             var style = document.createElement('style');
-             style.innerHTML = `
-             #canvas {
-	     position: absolute;
-	     top: 0px;
-	     left: 0px;
-	     margin: 0px;
-	     width: 100%;
-	     height: 100%;
-	     overflow: hidden;
-	     display: block;
-             }`;
-            document.head.appendChild(style);
+             var canvas = id('canvas');
+             canvas.style.position= 'absolute';
+             canvas.style.top='0px';
+             canvas.style.left='0px';            
+	     canvas.style.margin='0px';            
+             canvas.style.width='100%';
+             canvas.style.height='100%';
+             canvas.style.overflow='hidden';
+             canvas.style.display= 'block';   
             }
           }
           statusElement.innerHTML = text;
@@ -91,16 +87,12 @@ var Module = {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
         Module.setStatus('Exception thrown, see JavaScript console');
         spinnerElement.style.display = 'none';
+        id('canvas').style.top= '80px';
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
         };
       };
 
-
-
-window.onerror = function(event) {
-    console.log("onerror: " + event);
-};
 
 function callAsEventHandler(func_name) {
     // this is some hackery to make the browser module believe that it
