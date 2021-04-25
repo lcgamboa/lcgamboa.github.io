@@ -137,10 +137,11 @@ pre {
 
 .nav-btn {
   position: absolute;
-  top: 20px;
-  left: 10px;
+  bottom: 60px;
+  left: 5px;
   display: inline-block;
   cursor: pointer;
+  background-color: #CECECE;
   z-index: 1; }
 
 .nav-btn-bar1, .nav-btn-bar2, .nav-btn-bar3 {
@@ -163,7 +164,7 @@ pre {
 
 .main-nav-bar {
   position: absolute;
-  top: 60px;
+  bottom: 100px;
   left: -180px;
   width: 120px;
   z-index: 1;
@@ -200,7 +201,7 @@ pre {
 
 .floating-bottom-left {
   position: absolute;
-  left: 10px;
+  left: 3px;
   bottom: 0;
   background-color: transparent;
   z-index: 1;
