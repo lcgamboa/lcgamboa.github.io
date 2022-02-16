@@ -15,16 +15,16 @@
           if (sab) {
               mainScript.setAttribute("src", "picsimlab_mt.js");
               console.log("multithread supported");
-              document.body.innerHTML +=  "<h1>multithread supported</h1>";
+              document.body.innerHTML +=  "<h1><font color='blue'>multithread supported</h1></font>";
           } else {
               mainScript.setAttribute("src", "picsimlab_wasm.js"); 
               console.log("multithread not supported");
-              document.body.innerHTML +=  "<h1>multithread not supported</h1>"; 
+              document.body.innerHTML +=  "<h1><font color='red'>multithread not supported</h1></font>"; 
           }
       } catch(e) {
           mainScript.setAttribute("src", "picsimlab_wasm.js");
           console.log("multithread not supported");
-          document.body.innerHTML +=  "<h1>multithread not supported</h1>"; 
+          document.body.innerHTML +=  "<h1><font color='red'>multithread not supported</font></h1>"; 
       }
       document.body.appendChild(mainScript);
     </script>
