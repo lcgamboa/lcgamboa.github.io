@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>title</title>
+  </head>
+  <body bgcolor="#808080">
+    <script src="coi-serviceworker.js"></script>
+    <script>
+      let mainScript = document.createElement("script");
+      mainScript.setAttribute("async", "true");
+      try {
+          var sab = new SharedArrayBuffer(1);
+
+          if (sab) {
+              mainScript.setAttribute("src", "picsimlab_mt.js");
+              console.log("multithread supported");
+              document.body.innerHTML +=  "<h1>multithread supported</h1>";
+          } else {
+              mainScript.setAttribute("src", "picsimlab_wasm.js"); 
+              console.log("multithread not supported");
+              document.body.innerHTML +=  "<h1>multithread not supported</h1>"; 
+          }
+      } catch(e) {
+          mainScript.setAttribute("src", "picsimlab_wasm.js");
+          console.log("multithread not supported");
+          document.body.innerHTML +=  "<h1>multithread not supported</h1>"; 
+      }
+      document.body.appendChild(mainScript);
+    </script>
+  </body>
+</html>
+
