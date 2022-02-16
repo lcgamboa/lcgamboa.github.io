@@ -91,7 +91,8 @@
 
 <script>
 let mainScript = document.createElement("script");
-mainScript.setAttribute("async", "true");
+mainScript.setAttribute("async", "false");
+mainScript.setAttribute("defer", "true");
 try {
     var sab = new SharedArrayBuffer(1);
 
