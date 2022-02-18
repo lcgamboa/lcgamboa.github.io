@@ -4,12 +4,11 @@
   <meta charset="utf-8">
   <title>PICSimLab</title>
   <meta name="description" content="PICSimLab Simulator Online version">
-
   <link rel="stylesheet" href="picsimlab.css">
+  <script src="coi-serviceworker.js"></script>
 </head>
 
   <body>
-    <script src="coi-serviceworker.js" async></script>
     <div class="spinner" id='spinner'></div>
     <div class="emscripten" id="status">Downloading...</div>
 
@@ -91,8 +90,7 @@
 
 <script>
 let mainScript = document.createElement("script");
-mainScript.setAttribute("async", "false");
-mainScript.setAttribute("defer", "true");
+mainScript.setAttribute("async", "true");
 try {
     var sab = new SharedArrayBuffer(1);
 
