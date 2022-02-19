@@ -88,25 +88,7 @@
     <canvas class="game" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript" src="emsc.js"></script>
 
-<script>
-let mainScript = document.createElement("script");
-mainScript.setAttribute("async", "true");
-try {
-    var sab = new SharedArrayBuffer(1);
-
-    if (sab) {
-        mainScript.setAttribute("src", "picsimlab_mt.js");
-        console.log("multithread supported");
-    } else {
-        mainScript.setAttribute("src", "picsimlab_wasm.js"); 
-        console.log("multithread not supported");
-    }
-} catch(e) {
-    mainScript.setAttribute("src", "picsimlab_wasm.js");
-    console.log("multithread not supported");
-}
-document.body.appendChild(mainScript);
-</script>
+<script src="sab.js"></script>
  <!--script data-goatcounter='https://4017.goatcounter.com/count' src='https://gc.zgo.at/count.js'></script-->
   </body>
 </html>
