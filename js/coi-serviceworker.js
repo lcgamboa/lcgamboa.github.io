@@ -1,4 +1,5 @@
 /*! coi-serviceworker v0.1.6 - Guido Zuidhof, licensed under MIT */
+console.log("Script coi-serviceworker.js");
 if (typeof window === 'undefined') {
     self.addEventListener("install", () => self.skipWaiting());
     self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));

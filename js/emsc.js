@@ -42,7 +42,7 @@ var Module = {
         return canvas;
     })(),
     setStatus: function(text) {
-         console.log("status: " + text);
+          //console.log("status: " + text);
           if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.last.text) return;
           var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);

@@ -1,3 +1,4 @@
+console.log("Script sab.js");
 let mainScript = document.createElement("script");
 mainScript.setAttribute("async", "true");
 try {
